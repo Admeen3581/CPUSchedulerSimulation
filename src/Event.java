@@ -11,6 +11,14 @@ public class Event
    private Event nextEvent;
    private Process process;
 
+   public Event(eventType type, Process process)
+   {
+      this.type = type;
+      this.process = process;
+      this.nextEvent = null;
+      this.serveTime = this.process.getArrivalTime();
+   }
+
    public eventType getType()
    {
       return type;

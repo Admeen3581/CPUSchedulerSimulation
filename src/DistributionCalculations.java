@@ -54,11 +54,16 @@ public class DistributionCalculations
    /**
     * Calculates a random variable based on an Exponential distribution
     * @see <a href="https://en.wikipedia.org/wiki/Exponential_distribution">Exponential Distribution - Wiki</a>
-    * @param expectedValue Lambda
+    * @param expectedValue Lambda or Mew
     * @return random Exponential variable
     */
    public static double exponentialVariable(double expectedValue)
    {
       return -Math.log(1-Math.random())/expectedValue;
+   }
+
+   public static int exponentialVariable(int expectedValue)
+   {
+      return (int)(Math.round(-Math.log(1-Math.random())/expectedValue));
    }
 }
