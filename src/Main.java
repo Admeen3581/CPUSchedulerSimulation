@@ -8,7 +8,7 @@ public class Main
    {
       System.out.println("Hello, World!");
 
-      Simulator.runSimulator(20, 1/0.04); //Service time = 1/service rate
+      Simulator.runSimulator(20, 1/0.1); //Service time = 1/service rate
 
 
    }

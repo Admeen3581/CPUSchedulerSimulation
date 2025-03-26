@@ -9,7 +9,6 @@ public class Process
    private int ID;
    private double arrivalTime; //seconds
    private double serviceTime; //seconds
-   private double remainingServiceTime; //seconds
 
 
    public Process(int ID, double arrivalTime, double serviceTime)
@@ -17,17 +16,6 @@ public class Process
       this.ID = ID;
       this.arrivalTime = arrivalTime;
       this.serviceTime = serviceTime;
-      this.remainingServiceTime = 0;
-   }
-
-   public double getRemainingServiceTime()
-   {
-      return remainingServiceTime;
-   }
-
-   public void setRemainingServiceTime(double remainingServiceTime)
-   {
-      this.remainingServiceTime = remainingServiceTime;
    }
 
    public int getID()

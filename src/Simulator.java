@@ -33,12 +33,10 @@ public class Simulator
          if(currEvent.getType() == eventType.ARRIVAL)
          {
             arrivalHandler(currEvent);
-            System.out.println("arrivial");
          }
          else
          {
             departureHandler(currEvent);
-            System.out.println("depaert");
          }
       }
    }
