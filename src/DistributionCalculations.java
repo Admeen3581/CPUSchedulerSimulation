@@ -2,7 +2,7 @@
  * @author Adam Long
  */
 
-public class  DistributionCalculations
+public class DistributionCalculations
 {
    /**
     * Calculates factorial of number
@@ -26,7 +26,7 @@ public class  DistributionCalculations
     * @param requestedValue K
     * @return Expected probability of K given Poisson Distribution
     */
-   protected static double poissonEquation(int expectedValue, int requestedValue)
+   public static double poissonEquation(int expectedValue, int requestedValue)
    {
       double result = Math.pow(expectedValue, requestedValue) * Math.exp(Math.negateExact(expectedValue)) / factorial(requestedValue);
       return Math.round(result * 1E5) / 1E5;
@@ -36,16 +36,16 @@ public class  DistributionCalculations
     * Calculates a random variable based on a Poisson distribution
     * @return random Poisson variable
     */
-   public static int poissonVariable()
+   public static int poissonVariable(int expectedValue)
    {
       int eventCounter = 0;
-      double probability = poissonEquation(2, 0);
+      double probability = poissonEquation(expectedValue, 0);
       double rand = Math.random();//uniformly distributed
 
       while(rand > probability)
       {
          eventCounter++;
-         probability += poissonEquation(2, eventCounter);
+         probability += poissonEquation(expectedValue, eventCounter);
       }
 
       return eventCounter;

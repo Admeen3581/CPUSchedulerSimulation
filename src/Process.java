@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 /**
  * @author Adam Long
  */
@@ -15,6 +17,16 @@ public class Process
       this.serviceTime = serviceTime;
    }
 
+   public int getArrivalTime()
+   {
+      return arrivalTime;
+   }
+
+   public double getServiceTime()
+   {
+      return serviceTime;
+   }
+
    @Override
    public String toString()
    {
@@ -22,5 +34,20 @@ public class Process
             "arrivalTime= " + this.arrivalTime +
             ", serviceTime= " + this.serviceTime +
             '}';
+   }
+}
+
+class SortProcess implements Comparator<Process>
+{
+   public int compare(Process p1, Process p2)
+   {
+      if(p1.getArrivalTime() == p2.getArrivalTime())
+      {
+         return Double.compare(p1.getServiceTime(), p2.getServiceTime());
+      }
+      else
+      {
+         return p1.getArrivalTime() - p2.getArrivalTime();
+      }
    }
 }
