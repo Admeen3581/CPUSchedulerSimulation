@@ -13,25 +13,25 @@ public class Simulator
    private double mew;
 
    //Sim State
-   private static double currTime = 0;
-   private static boolean isCPUIdle = true;
-   private static int readyQueueCount = 0;
-   private static int totalProcesses = 0;
-   private static int currProcessID = 0;
+   private double currTime = 0;
+   private boolean isCPUIdle = true;
+   private int readyQueueCount = 0;
+   private int totalProcesses = 0;
+   private int currProcessID = 0;
 
    //Metrics
-   private static double totalCPUTime = 0;
-   private static double totalReadyQueueLength = 0;
-   private static double totalTurnaroundTime = 0;
-   private static double totalWaitingTime = 0;
+   private double totalCPUTime = 0;
+   private double totalReadyQueueLength = 0;
+   private double totalTurnaroundTime = 0;
 
-   private static ArrayList<Event> eventQueue = new ArrayList<>();
+   private ArrayList<Event> eventQueue = new ArrayList<>();
 
    public Simulator(double lambda, double mew)
    {
       this.lambda = lambda;
       this.mew = mew;
    }
+
 
    public void runSimulation()
    {
@@ -61,19 +61,19 @@ public class Simulator
       }
    }
 
-   public Map<String, Double> plotMetrics()
+   public Map<String, Double> retrieveMetrics()
    {
       double cpuUtil = totalCPUTime / currTime;
       double avgReadyQueueLength = totalReadyQueueLength / currTime;
       double avgTurnaroundTime = totalTurnaroundTime / 10000;
-      double avgWaitingTime = totalWaitingTime / 10000;
+      double totalThroughput = totalProcesses / currTime;
 
       Map<String, Double> map = new HashMap<>();
 
       map.put("CPUUtil", cpuUtil);
       map.put("AvgReadyQueueLength", avgReadyQueueLength);
       map.put("AvgTurnaroundTime", avgTurnaroundTime);
-      map.put("AvgWaitingTime", avgWaitingTime);
+      map.put("TotalThroughput", totalThroughput);
 
       return map;
    }
@@ -114,7 +114,6 @@ public class Simulator
       //Update Stats
       currProcess.setEndTime(currTime);
       totalTurnaroundTime += currProcess.getEndTime() - currProcess.getArrivalTime();
-      totalWaitingTime += Math.abs(currProcess.getStartTime() - currProcess.getArrivalTime());
       totalProcesses++;
 
       //Depart Event
