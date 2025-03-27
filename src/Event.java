@@ -1,22 +1,24 @@
+/**
+ * @author Adam Long
+ */
+
 enum eventType
 {
    ARRIVAL,
    DEPARTURE;
 }
 
-public class Event
+public class Event implements Comparable<Event>
 {
    private eventType type;
-   private double serveTime; //seconds
-   private Event nextEvent;
    private Process process;
+   private double serveTime;
 
-   public Event(eventType type, Process process)
+   public Event(eventType type, Process process, double serveTime)
    {
       this.type = type;
       this.process = process;
-      this.nextEvent = null;
-      this.serveTime = this.process.getArrivalTime();
+      this.serveTime = serveTime;
    }
 
    public eventType getType()
@@ -24,9 +26,9 @@ public class Event
       return type;
    }
 
-   public void setType(eventType type)
+   public Process getProcess()
    {
-      this.type = type;
+      return process;
    }
 
    public double getServeTime()
@@ -34,28 +36,9 @@ public class Event
       return serveTime;
    }
 
-   public void setServeTime(double serveTime)
+   @Override
+   public int compareTo(Event event)
    {
-      this.serveTime = serveTime;
-   }
-
-   public Event getNextEvent()
-   {
-      return nextEvent;
-   }
-
-   public void setNextEvent(Event nextEvent)
-   {
-      this.nextEvent = nextEvent;
-   }
-
-   public Process getProcess()
-   {
-      return process;
-   }
-
-   public void setProcess(Process process)
-   {
-      this.process = process;
+      return Double.compare(this.serveTime, event.serveTime);
    }
 }

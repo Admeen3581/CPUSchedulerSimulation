@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Adam Long
@@ -6,94 +8,140 @@ import java.util.ArrayList;
 
 public class Simulator
 {
-   private static final ArrayList<Event> eventQueue = new ArrayList<>();
-   private static int totalProcesses = 0;
-   private static double currentClock = 0;
+   //Sim Params
+   private double lambda;
+   private double mew;
+
+   //Sim State
+   private static double currTime = 0;
+   private static boolean isCPUIdle = true;
    private static int readyQueueCount = 0;
+   private static int totalProcesses = 0;
+   private static int currProcessID = 0;
 
-   private static int lambda;
-   private static double mew;
-   private static boolean CPUIdle = true;
+   //Metrics
+   private static double totalCPUTime = 0;
+   private static double totalReadyQueueLength = 0;
+   private static double totalTurnaroundTime = 0;
+   private static double totalWaitingTime = 0;
 
+   private static ArrayList<Event> eventQueue = new ArrayList<>();
 
-   public static void runSimulator(int lambdaRate, double serviceRate)
+   public Simulator(double lambda, double mew)
    {
-      lambda = lambdaRate;
-      mew = serviceRate;
+      this.lambda = lambda;
+      this.mew = mew;
+   }
 
-      simulatorInit();
+   public void runSimulation()
+   {
+      initSimulation();
 
-      Event currEvent;
       while(totalProcesses < 10000)
       {
-         currEvent = eventQueue.remove(0);
+         Event currEvent = eventQueue.remove(0);
 
-         currentClock += currEvent.getServeTime();
+         double timeElapsed = currEvent.getServeTime() - currTime;
+         if(!isCPUIdle)
+         {
+            totalCPUTime += timeElapsed;
+         }
+         totalReadyQueueLength += readyQueueCount;
+
+         currTime = currEvent.getServeTime();
 
          if(currEvent.getType() == eventType.ARRIVAL)
          {
-            arrivalHandler(currEvent);
+            handleArrival(currEvent);
          }
          else
          {
-            departureHandler(currEvent);
+            handleDeparture(currEvent);
          }
       }
    }
 
-
-   private static void arrivalHandler(Event currEvent)
+   public Map<String, Double> plotMetrics()
    {
-      Process currProcess = currEvent.getProcess();
+      double cpuUtil = totalCPUTime / currTime;
+      double avgReadyQueueLength = totalReadyQueueLength / currTime;
+      double avgTurnaroundTime = totalTurnaroundTime / 10000;
+      double avgWaitingTime = totalWaitingTime / 10000;
 
-      Process nextProcess = new Process(currProcess.getID()+1,
-            DistributionCalculations.exponentialVariable(lambda),
-            DistributionCalculations.exponentialVariable(mew));
+      Map<String, Double> map = new HashMap<>();
 
-      Event nextEvent = new Event(eventType.ARRIVAL, nextProcess);
+      map.put("CPUUtil", cpuUtil);
+      map.put("AvgReadyQueueLength", avgReadyQueueLength);
+      map.put("AvgTurnaroundTime", avgTurnaroundTime);
+      map.put("AvgWaitingTime", avgWaitingTime);
 
+      return map;
+   }
+
+   private void handleArrival(Event event)
+   {
+      Process currProcess = event.getProcess();
+
+      //Next Event (Arrival)
+      double nextArrTime = currTime + DistributionCalculations.exponentialVariable(lambda);
+      double nextServiceTime = DistributionCalculations.exponentialVariable(mew);
+
+      Process nextProcess = new Process(++currProcessID, nextArrTime, nextServiceTime);
+
+      Event nextEvent = new Event(eventType.ARRIVAL, nextProcess, nextArrTime);
       eventQueue.add(nextEvent);
 
-      if (!CPUIdle)
+      //Curr Event (Departure)
+      if(!isCPUIdle)
       {
          readyQueueCount++;
       }
       else
       {
-         CPUIdle = false;
-         Event departure = new Event(eventType.DEPARTURE, currProcess);
-         eventQueue.add(departure);
+         isCPUIdle = false;
+         currProcess.setStartTime(currTime);
+
+         double departTime = currTime + currProcess.getServiceTime();
+         Event departEvent = new Event(eventType.DEPARTURE, currProcess, departTime);
+         eventQueue.add(departEvent);
       }
    }
 
-   private static void departureHandler(Event currEvent)
+   private void handleDeparture(Event event)
    {
-      Process currProcess = currEvent.getProcess();
+      Process currProcess = event.getProcess();
 
+      //Update Stats
+      currProcess.setEndTime(currTime);
+      totalTurnaroundTime += currProcess.getEndTime() - currProcess.getArrivalTime();
+      totalWaitingTime += Math.abs(currProcess.getStartTime() - currProcess.getArrivalTime());
       totalProcesses++;
 
+      //Depart Event
       if(readyQueueCount == 0)
       {
-         CPUIdle = true;
+         isCPUIdle = true;
       }
       else
       {
          readyQueueCount--;
-         Event departure = new Event(eventType.DEPARTURE, currProcess);
-         eventQueue.add(departure);
+
+         double departTime = currTime + currProcess.getServiceTime();
+         Event departEvent = new Event(eventType.DEPARTURE, currProcess, departTime);
+         eventQueue.add(departEvent);
       }
    }
 
-   private static void simulatorInit()
+   private void initSimulation()
    {
-      Process initProcess = new Process(1,
-            DistributionCalculations.exponentialVariable(lambda),
-            DistributionCalculations.exponentialVariable(mew));
+      double firstArrTime = DistributionCalculations.exponentialVariable(lambda);
+      double firstServiceTime = DistributionCalculations.exponentialVariable(mew);
 
-      Event initEvent = new Event(eventType.ARRIVAL, initProcess);
-      eventQueue.add(initEvent);
+      Process firstProcess = new Process(++currProcessID, firstArrTime,firstServiceTime);
 
-      CPUIdle = true;
+      Event firstEvent = new Event(eventType.ARRIVAL, firstProcess, firstServiceTime);
+      eventQueue.add(firstEvent);
+      //moarh
    }
 }
 

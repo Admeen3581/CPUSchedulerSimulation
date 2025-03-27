@@ -9,6 +9,8 @@ public class Process
    private int ID;
    private double arrivalTime; //seconds
    private double serviceTime; //seconds
+   private double startTime; //seconds
+   private double endTime; //seconds
 
 
    public Process(int ID, double arrivalTime, double serviceTime)
@@ -16,6 +18,28 @@ public class Process
       this.ID = ID;
       this.arrivalTime = arrivalTime;
       this.serviceTime = serviceTime;
+      this.startTime = arrivalTime;
+      this.endTime = -1;
+   }
+
+   public double getStartTime()
+   {
+      return startTime;
+   }
+
+   public void setStartTime(double startTime)
+   {
+      this.startTime = startTime;
+   }
+
+   public double getEndTime()
+   {
+      return endTime;
+   }
+
+   public void setEndTime(double endTime)
+   {
+      this.endTime = endTime;
    }
 
    public int getID()
