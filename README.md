@@ -15,4 +15,4 @@ STEP BY STEP HOW TO RUN PROBLEM 1 & 2 (same execution see terminal).
 
 Terminal will output the solution in text form by printing a HashMap.
 
-See report for graphs.
+See report for graphs or place the JFreeGraph libraries inside your classpath.
